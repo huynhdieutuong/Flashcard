@@ -16,6 +16,7 @@ namespace API.Data
         }
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Card> Cards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
