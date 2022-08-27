@@ -8,6 +8,7 @@ using API.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -21,6 +22,15 @@ namespace API.Controllers
         {
             _context = context;
             _userManager = userManager;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Category>>> GetCategories()
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var categories = await _context.Categories.Where(x => x.UserId == user.Id).ToListAsync();
+            return categories;
         }
 
         [HttpPost("create")]
