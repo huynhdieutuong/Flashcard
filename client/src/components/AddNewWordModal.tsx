@@ -32,11 +32,12 @@ const AddOrEditWordModal = ({ type, categoryId, card, updateCards }: Props) => {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState({
+  const initData = {
     english: '',
     vietnamese: '',
     categoryId,
-  })
+  }
+  const [data, setData] = useState(initData)
 
   const handleChangeData = (event: any) => {
     setData({
@@ -47,6 +48,7 @@ const AddOrEditWordModal = ({ type, categoryId, card, updateCards }: Props) => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
+    if (!data.english || !data.vietnamese) return
     try {
       setLoading(true)
       let res
@@ -58,6 +60,7 @@ const AddOrEditWordModal = ({ type, categoryId, card, updateCards }: Props) => {
       updateCards(type, res.data)
       setLoading(false)
       handleClose()
+      setData(initData)
     } catch (error) {
       setLoading(false)
       handleClose()

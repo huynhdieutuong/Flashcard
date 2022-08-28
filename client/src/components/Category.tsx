@@ -90,7 +90,7 @@ const Category = () => {
             }
             label='Mix'
           />
-          <LearnModal cards={cards} />
+          <LearnModal cards={cards} setCards={setCards} category={category} />
         </Box>
       </Stack>
       <Cards cards={cards} updateCards={updateCards} />
