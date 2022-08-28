@@ -1,21 +1,41 @@
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+import { Alert, LoadingButton } from '@mui/lab'
 import Container from '@mui/material/Container'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import * as React from 'react'
+import { Navigate } from 'react-router-dom'
+import axiosClient from '../api/axiosClient'
+import { useAccountContext } from '../context/AccountContext'
+import { FormEvent, useState } from 'react'
 
 const Login = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const { user, setUser } = useAccountContext()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
-    console.log({
-      username: data.get('username'),
-      password: data.get('password'),
-    })
+
+    try {
+      setLoading(true)
+      const res = await axiosClient.post('account/login', {
+        username: data.get('username'),
+        password: data.get('password'),
+      })
+      setUser(res.data)
+      setLoading(false)
+      setError(null)
+      localStorage.setItem('user', JSON.stringify(res.data))
+    } catch (error: any) {
+      localStorage.removeItem('user')
+      setLoading(false)
+      setError(error)
+    }
   }
+
+  if (user) return <Navigate to='/' />
 
   return (
     <Container component='main' maxWidth='xs'>
@@ -33,6 +53,7 @@ const Login = () => {
         <Typography component='h1' variant='h5'>
           Login
         </Typography>
+        {error && <Alert severity='error'>Username or password wrong!</Alert>}
         <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin='normal'
@@ -54,14 +75,15 @@ const Login = () => {
             id='password'
             autoComplete='current-password'
           />
-          <Button
+          <LoadingButton
             type='submit'
             fullWidth
             variant='contained'
             sx={{ mt: 3, mb: 2 }}
+            loading={loading}
           >
             Login
-          </Button>
+          </LoadingButton>
         </Box>
       </Box>
     </Container>

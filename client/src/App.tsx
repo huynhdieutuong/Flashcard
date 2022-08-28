@@ -1,12 +1,17 @@
 import { Box, CssBaseline } from '@mui/material'
 import { Container } from '@mui/system'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import axiosClient from './api/axiosClient'
 import './App.css'
+import { useAccountContext } from './context/AccountContext'
 import Header from './Header'
+import LoadingComponent from './LoadingComponent'
 
 function App() {
   const location = useLocation()
+  const { setUser } = useAccountContext()
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const hasOneDayPassed = () => {
@@ -23,9 +28,26 @@ function App() {
       const randomNumber1ToMax = Math.floor(Math.random() * max) + 1
       localStorage.backgroundNumber = randomNumber1ToMax
     }
-
     changeBackgroundOncePerDay()
   }, [])
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!localStorage.getItem('user')) return
+      try {
+        setLoading(true)
+        const res = await axiosClient.get('account/currentUser')
+        setUser(res.data)
+        setLoading(false)
+      } catch (error) {
+        localStorage.removeItem('user')
+        setLoading(false)
+      }
+    }
+    fetchUser()
+  }, [setUser])
+
+  if (loading) return <LoadingComponent message='Initializing app...' />
 
   const backgroundStyle =
     location.pathname === '/login'

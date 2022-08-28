@@ -6,20 +6,27 @@ import Category from './components/Category'
 import Home from './components/Home'
 import Login from './components/Login'
 import NotFound from './components/NotFound'
+import { AccountProvider } from './context/AccountContext'
+import PrivateRoute from './PrivateRoute'
 import reportWebVitals from './reportWebVitals'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<App />}>
-          <Route index element={<Home />} />
-          <Route path='login' element={<Login />} />
-          <Route path='category/:id' element={<Category />} />
-          <Route path='*' element={<NotFound />} />
-        </Route>
-      </Routes>
+      <AccountProvider>
+        <Routes>
+          <Route path='/' element={<App />}>
+            <Route path='login' element={<Login />} />
+
+            <Route element={<PrivateRoute />}>
+              <Route index element={<Home />} />
+              <Route path='category/:id' element={<Category />} />
+              <Route path='*' element={<NotFound />} />
+            </Route>
+          </Route>
+        </Routes>
+      </AccountProvider>
     </BrowserRouter>
   </React.StrictMode>
 )
