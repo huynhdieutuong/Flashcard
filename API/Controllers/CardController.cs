@@ -42,7 +42,7 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            var existCard = _context.Cards
+            var existCard = await _context.Cards
                 .FirstOrDefaultAsync(c => c.OwnerId == user.Id && c.English.ToLower().Contains(cardDto.English.ToLower()));
 
             if (existCard != null) return BadRequest(new ProblemDetails { Title = "This word is exist!" });
@@ -64,13 +64,13 @@ namespace API.Controllers
         public async Task<ActionResult<Card>> EditCard(int id, CreateCardDto cardDto)
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var card = await _context.Cards.FirstOrDefaultAsync(x => x.Id == id);
 
-            var existCard = _context.Cards
+            var existCard = await _context.Cards
                 .FirstOrDefaultAsync(c => c.OwnerId == user.Id && c.English.ToLower().Contains(cardDto.English.ToLower()));
 
-            if (existCard != null) return BadRequest(new ProblemDetails { Title = "This word is exist!" });
+            if (existCard != null && card.CategoryId == cardDto.CategoryId) return BadRequest(new ProblemDetails { Title = "This word is exist!" });
 
-            var card = await _context.Cards.FirstOrDefaultAsync(x => x.Id == id);
             card.English = cardDto.English;
             card.Vietnamese = cardDto.Vietnamese;
 
