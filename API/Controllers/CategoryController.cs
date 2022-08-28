@@ -42,6 +42,17 @@ namespace API.Controllers
             return categories;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Category>> GetCategory(int id)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var category = await _context.Categories
+                                .FirstOrDefaultAsync(x => x.UserId == user.Id && x.Id == id);
+
+            return category;
+        }
+
         [HttpPost("create")]
         public async Task<ActionResult<Category>> CreateCategory(CreateCategoryDto categoryDto)
         {

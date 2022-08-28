@@ -3,10 +3,11 @@ import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { useNavigate } from 'react-router-dom'
 
-interface Category {
+export interface Category {
   id: string
   name: string
   cardsCount: number
+  isMain: boolean
 }
 interface Props {
   categories: Category[]

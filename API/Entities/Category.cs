@@ -10,6 +10,7 @@ namespace API.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string UserId { get; set; }
+        public bool IsMain { get; set; }
         public List<Card> Cards { get; set; }
     }
 }

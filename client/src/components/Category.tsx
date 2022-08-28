@@ -1,10 +1,4 @@
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Stack,
-  TextField,
-} from '@mui/material'
+import { Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -12,12 +6,14 @@ import axiosClient from '../api/axiosClient'
 import LoadingComponent from '../LoadingComponent'
 import AddOrEditWordModal from './AddNewWordModal'
 import Cards, { Card } from './Cards'
+import { Category as Cat } from './Categories'
 import LearnModal from './LearnModal'
 
 const Category = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(false)
   const [cards, setCards] = useState<Card[]>([])
+  const [category, setCategory] = useState<Cat | null>(null)
   const [englishFirst, setEnglishFirst] = useState(true)
   const [mix, setMix] = useState(false)
 
@@ -25,11 +21,16 @@ const Category = () => {
     const fetchCards = async () => {
       try {
         setLoading(true)
-        const res = await axiosClient.get(`card/${id}`)
-        setCards(res.data)
+        const [resCard, resCategory] = await Promise.all([
+          axiosClient.get(`card/${id}`),
+          axiosClient.get(`category/${id}`),
+        ])
+        setCards(resCard.data)
+        setCategory(resCategory.data)
         setLoading(false)
       } catch (error) {
         setCards([])
+        setCategory(null)
         setLoading(false)
       }
     }
@@ -45,7 +46,7 @@ const Category = () => {
     }
   }
 
-  if (loading) return <LoadingComponent message='Loading...' />
+  if (loading || !category) return <LoadingComponent message='Loading...' />
 
   return (
     <div>
@@ -54,7 +55,7 @@ const Category = () => {
         direction='row'
         spacing={2}
       >
-        {id === '1' ? (
+        {category!.isMain ? (
           <AddOrEditWordModal
             type='add'
             categoryId={Number(id)}
