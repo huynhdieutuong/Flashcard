@@ -1,16 +1,16 @@
-import { Add } from '@mui/icons-material'
 import { Button, Checkbox, FormControlLabel, Stack } from '@mui/material'
 import { Box } from '@mui/system'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import axiosClient from '../api/axiosClient'
 import LoadingComponent from '../LoadingComponent'
-import Cards from './Cards'
+import AddOrEditWordModal from './AddNewWordModal'
+import Cards, { Card } from './Cards'
 
 const Category = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(false)
-  const [cards, setCards] = useState([])
+  const [cards, setCards] = useState<Card[]>([])
   const [mix, setMix] = useState(false)
 
   useEffect(() => {
@@ -29,6 +29,14 @@ const Category = () => {
     fetchCards()
   }, [id])
 
+  const updateCards = (type: string, card: Card) => {
+    if (type === 'add') {
+      setCards([{ ...card }, ...cards])
+    } else {
+      setCards(cards.map((c) => (c.id === card.id ? card : c)))
+    }
+  }
+
   if (loading) return <LoadingComponent message='Loading...' />
 
   return (
@@ -38,9 +46,15 @@ const Category = () => {
         direction='row'
         spacing={2}
       >
-        <Button variant='contained' color='secondary' startIcon={<Add />}>
-          Add new word
-        </Button>
+        {id === '1' ? (
+          <AddOrEditWordModal
+            type='add'
+            categoryId={Number(id)}
+            updateCards={updateCards}
+          />
+        ) : (
+          <span></span>
+        )}
         <Box>
           <FormControlLabel
             control={
@@ -54,7 +68,7 @@ const Category = () => {
           <Button variant='contained'>Learn</Button>
         </Box>
       </Stack>
-      <Cards cards={cards} />
+      <Cards cards={cards} updateCards={updateCards} />
     </div>
   )
 }

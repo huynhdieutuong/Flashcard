@@ -5,9 +5,9 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { Button } from '@mui/material'
+import AddOrEditWordModal from './AddNewWordModal'
 
-interface Card {
+export interface Card {
   id: number
   english: string
   vietnamese: string
@@ -19,9 +19,10 @@ interface Card {
 
 interface Props {
   cards: Card[]
+  updateCards: (type: string, card: Card) => void
 }
 
-const Cards = ({ cards }: Props) => {
+const Cards = ({ cards, updateCards }: Props) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 350 }} aria-label='simple table'>
@@ -45,7 +46,12 @@ const Cards = ({ cards }: Props) => {
               <TableCell align='right'>{card.english}</TableCell>
               <TableCell align='right'>{card.vietnamese}</TableCell>
               <TableCell align='right'>
-                <Button color='secondary'>Edit</Button>
+                <AddOrEditWordModal
+                  type='edit'
+                  categoryId={card.categoryId}
+                  card={card}
+                  updateCards={updateCards}
+                />
               </TableCell>
             </TableRow>
           ))}
