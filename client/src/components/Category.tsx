@@ -16,6 +16,7 @@ const Category = () => {
   const [category, setCategory] = useState<Cat | null>(null)
   const [englishFirst, setEnglishFirst] = useState(true)
   const [mix, setMix] = useState(false)
+  const [amount, setAmount] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -71,6 +72,8 @@ const Category = () => {
             variant='outlined'
             size='small'
             sx={{ mr: 2, width: '100px' }}
+            value={amount}
+            onChange={(e: any) => setAmount(e.target.value)}
           />
           <FormControlLabel
             control={
@@ -90,7 +93,14 @@ const Category = () => {
             }
             label='Mix'
           />
-          <LearnModal cards={cards} setCards={setCards} category={category} />
+          <LearnModal
+            cards={cards}
+            setCards={setCards}
+            category={category}
+            englishFirst={englishFirst}
+            mix={mix}
+            amount={amount}
+          />
         </Box>
       </Stack>
       <Cards cards={cards} updateCards={updateCards} />

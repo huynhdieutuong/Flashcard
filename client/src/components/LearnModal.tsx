@@ -16,6 +16,9 @@ interface Props {
   cards: Card[]
   setCards: (cards: Card[]) => void
   category: Category
+  englishFirst: boolean
+  mix: boolean
+  amount: number | null
 }
 
 const style = {
@@ -29,7 +32,14 @@ const style = {
   p: 3,
 }
 
-const LearnModal = ({ cards, setCards, category }: Props) => {
+const LearnModal = ({
+  cards: originCards,
+  setCards,
+  category,
+  englishFirst,
+  mix,
+  amount,
+}: Props) => {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [current, setCurrent] = useState(0)
@@ -38,6 +48,35 @@ const LearnModal = ({ cards, setCards, category }: Props) => {
     setOpen(false)
     setCurrent(0)
   }
+  const [cards, setNewCards] = useState<Card[]>([])
+
+  const shuffleCards = (cards: Card[]) => {
+    let currentIndex = cards.length,
+      randomIndex
+
+    // While there remain elements to shuffle.
+    while (currentIndex !== 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex)
+      currentIndex--
+
+      // And swap it with the current element.
+      ;[cards[currentIndex], cards[randomIndex]] = [
+        cards[randomIndex],
+        cards[currentIndex],
+      ]
+    }
+
+    return cards
+  }
+
+  useEffect(() => {
+    let newCards = [...originCards]
+    if (mix) shuffleCards(newCards)
+    if (amount && amount > 0 && amount < newCards.length)
+      newCards = newCards.slice(0, amount)
+    setNewCards(newCards)
+  }, [originCards, mix, amount])
 
   const handleNavigate = (position: 'left' | 'right') => {
     if (position === 'left' && current > 0) {
@@ -105,7 +144,7 @@ const LearnModal = ({ cards, setCards, category }: Props) => {
               <Close fontSize='large' />
             </IconButton>
           </Box>
-          <FlashCard card={cards[current]} />
+          <FlashCard card={cards[current]} englishFirst={englishFirst} />
           <Box
             sx={{
               display: 'flex',

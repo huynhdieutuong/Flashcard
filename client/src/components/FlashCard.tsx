@@ -5,9 +5,10 @@ import { Card } from './Cards'
 
 interface Props {
   card: Card
+  englishFirst: boolean
 }
 
-const FlashCard = ({ card }: Props) => {
+const FlashCard = ({ card, englishFirst }: Props) => {
   return (
     <>
       <Box
@@ -36,7 +37,9 @@ const FlashCard = ({ card }: Props) => {
             overflow: 'hidden',
           }}
         >
-          <Typography variant='h2'>{card.english}</Typography>
+          <Typography variant='h2'>
+            {englishFirst ? card.english : card.vietnamese}
+          </Typography>
         </Box>
         <Box
           sx={{
@@ -46,7 +49,9 @@ const FlashCard = ({ card }: Props) => {
             overflow: 'hidden',
           }}
         >
-          <Typography variant='h2'>{card.vietnamese}</Typography>
+          <Typography variant='h2'>
+            {englishFirst ? card.vietnamese : card.english}
+          </Typography>
         </Box>
       </Box>
     </>
