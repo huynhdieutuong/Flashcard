@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.Entities
+namespace API.DTOs
 {
-    public class Category
+    public class CategoryDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string UserId { get; set; }
-        public List<Card> Cards { get; set; }
+        public int CardsCount { get; set; }
     }
 }

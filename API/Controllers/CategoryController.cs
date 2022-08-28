@@ -25,11 +25,20 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetCategories()
+        public async Task<ActionResult<List<CategoryDto>>> GetCategories()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            var categories = await _context.Categories.Where(x => x.UserId == user.Id).ToListAsync();
+            var categories = await _context.Categories
+                                .Include(x => x.Cards)
+                                .Where(x => x.UserId == user.Id)
+                                .Select(x => new CategoryDto
+                                {
+                                    Id = x.Id,
+                                    Name = x.Name,
+                                    CardsCount = x.Cards.Count
+                                }).ToListAsync();
+
             return categories;
         }
 
