@@ -7,6 +7,7 @@ import { alpha, styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Container } from '@mui/system'
+import { useNavigate } from 'react-router-dom'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -49,6 +50,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }))
 
 const Header = () => {
+  const navigate = useNavigate()
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='static'>
@@ -73,6 +76,7 @@ const Header = () => {
                   alignItems: 'center',
                   cursor: 'pointer',
                 }}
+                onClick={() => navigate('/')}
               >
                 <Home fontSize='medium' /> HOME
               </Box>
