@@ -1,5 +1,14 @@
 import { Home } from '@mui/icons-material'
 import SearchIcon from '@mui/icons-material/Search'
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import InputBase from '@mui/material/InputBase'
@@ -7,7 +16,11 @@ import { alpha, styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Container } from '@mui/system'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axiosClient from './api/axiosClient'
+import { Card } from './components/Cards'
+import useOutsideAlerter from './hooks/useOutsideAlerter'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -51,6 +64,64 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const Header = () => {
   const navigate = useNavigate()
+  const ref = useRef<null | ReturnType<typeof setTimeout>>(null)
+  const [values, setValues] = useState<Card[] | null>(null)
+  const [hideSearch, setHideSearch] = useState(true)
+  const wrapperRef = useRef(null)
+  useOutsideAlerter(wrapperRef, () => setHideSearch(true))
+
+  const handleSearch = (e: any) => {
+    if (ref.current) clearTimeout(ref.current)
+    ref.current = setTimeout(async () => {
+      try {
+        const res = await axiosClient.get(`card?key=${e.target.value}`)
+        setValues(res.data)
+        setHideSearch(false)
+      } catch (error) {
+        setValues(null)
+      }
+    }, 500)
+  }
+
+  const renderTableSearch = (cards: Card[]) => {
+    return (
+      <TableContainer
+        ref={wrapperRef}
+        component={Paper}
+        sx={{ position: 'absolute', top: '60px', zIndex: '100' }}
+      >
+        <Table aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell>Num.</TableCell>
+              <TableCell align='right'>English</TableCell>
+              <TableCell align='right'>Vietnames</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {!cards.length ? (
+              <TableRow>
+                <TableCell>No words found!</TableCell>
+              </TableRow>
+            ) : (
+              cards.map((card, index) => (
+                <TableRow
+                  key={card.id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component='th' scope='row'>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell align='right'>{card.english}</TableCell>
+                  <TableCell align='right'>{card.vietnamese}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -62,7 +133,7 @@ const Header = () => {
             justifyContent: 'center',
           }}
         >
-          <Toolbar>
+          <Toolbar sx={{ position: 'relative' }}>
             <Typography
               variant='h6'
               noWrap
@@ -88,8 +159,10 @@ const Header = () => {
               <StyledInputBase
                 placeholder='Search…'
                 inputProps={{ 'aria-label': 'search' }}
+                onChange={handleSearch}
               />
             </Search>
+            {!hideSearch && values && renderTableSearch(values)}
           </Toolbar>
         </Container>
       </AppBar>

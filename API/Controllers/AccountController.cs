@@ -56,6 +56,22 @@ namespace API.Controllers
             }
 
             await _userManager.AddToRoleAsync(user, "Member");
+
+            var mainCat = new Category
+            {
+                Name = "Learning",
+                UserId = user.Id,
+                IsMain = true
+            };
+            var subCat = new Category
+            {
+                Name = "Remembered",
+                UserId = user.Id
+            };
+            _context.Categories.Add(mainCat);
+            _context.Categories.Add(subCat);
+            await _context.SaveChangesAsync();
+
             return StatusCode(201);
         }
 

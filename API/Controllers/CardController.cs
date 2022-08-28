@@ -42,6 +42,11 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
+            var existCard = _context.Cards
+                .FirstOrDefaultAsync(c => c.OwnerId == user.Id && c.English.ToLower().Contains(cardDto.English.ToLower()));
+
+            if (existCard != null) return BadRequest(new ProblemDetails { Title = "This word is exist!" });
+
             var card = new Card
             {
                 English = cardDto.English,
@@ -58,6 +63,13 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Card>> EditCard(int id, CreateCardDto cardDto)
         {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var existCard = _context.Cards
+                .FirstOrDefaultAsync(c => c.OwnerId == user.Id && c.English.ToLower().Contains(cardDto.English.ToLower()));
+
+            if (existCard != null) return BadRequest(new ProblemDetails { Title = "This word is exist!" });
+
             var card = await _context.Cards.FirstOrDefaultAsync(x => x.Id == id);
             card.English = cardDto.English;
             card.Vietnamese = cardDto.Vietnamese;
@@ -71,6 +83,20 @@ namespace API.Controllers
             _context.Cards.Update(card);
             await _context.SaveChangesAsync();
             return card;
+        }
+
+        [HttpGet()]
+        public async Task<ActionResult<List<Card>>> SearchCard(string key)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var cards = await _context.Cards
+                            .Where(x => (x.English.ToLower().Contains(key.ToLower()) || x.Vietnamese.ToLower().Contains(key.ToLower()))
+                                            && x.OwnerId == user.Id)
+                            .OrderByDescending(x => x.ModifiedDate)
+                            .ToListAsync();
+
+            return cards;
         }
     }
 }

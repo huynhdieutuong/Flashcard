@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Modal from '@mui/material/Modal'
 import { Add, Close } from '@mui/icons-material'
-import { IconButton, TextField } from '@mui/material'
+import { Alert, IconButton, TextField } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import { useEffect, useState } from 'react'
 import { Card } from './Cards'
@@ -38,6 +38,7 @@ const AddOrEditWordModal = ({ type, categoryId, card, updateCards }: Props) => {
     categoryId,
   }
   const [data, setData] = useState(initData)
+  const [error, setError] = useState(null)
 
   const handleChangeData = (event: any) => {
     setData({
@@ -61,9 +62,9 @@ const AddOrEditWordModal = ({ type, categoryId, card, updateCards }: Props) => {
       setLoading(false)
       handleClose()
       setData(initData)
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false)
-      handleClose()
+      setError(error.response.data.title)
     }
   }
 
@@ -113,6 +114,7 @@ const AddOrEditWordModal = ({ type, categoryId, card, updateCards }: Props) => {
               <Close fontSize='large' />
             </IconButton>
           </Box>
+          {error && <Alert severity='error'>{error}</Alert>}
           <Box
             id='modal-modal-description'
             noValidate

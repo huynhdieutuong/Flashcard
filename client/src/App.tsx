@@ -55,9 +55,8 @@ function App() {
       : {
           backgroundImage: `url(/backgrounds/background${localStorage.backgroundNumber}.jpg)`,
           backgroundPosition: 'center top',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          height: 'calc(100vh - 64px)',
+          backgroundRepeat: 'repeat-y',
+          minHeight: 'calc(100vh - 64px)',
         }
 
   return (
