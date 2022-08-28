@@ -1,4 +1,10 @@
-import { Button, Checkbox, FormControlLabel, Stack } from '@mui/material'
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Stack,
+  TextField,
+} from '@mui/material'
 import { Box } from '@mui/system'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -6,11 +12,13 @@ import axiosClient from '../api/axiosClient'
 import LoadingComponent from '../LoadingComponent'
 import AddOrEditWordModal from './AddNewWordModal'
 import Cards, { Card } from './Cards'
+import LearnModal from './LearnModal'
 
 const Category = () => {
   const { id } = useParams()
   const [loading, setLoading] = useState(false)
   const [cards, setCards] = useState<Card[]>([])
+  const [englishFirst, setEnglishFirst] = useState(true)
   const [mix, setMix] = useState(false)
 
   useEffect(() => {
@@ -56,6 +64,22 @@ const Category = () => {
           <span></span>
         )}
         <Box>
+          <TextField
+            id='amount'
+            label='Amount'
+            variant='outlined'
+            size='small'
+            sx={{ mr: 2, width: '100px' }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={englishFirst}
+                onChange={(e: any) => setEnglishFirst(e.target.checked)}
+              />
+            }
+            label='English'
+          />
           <FormControlLabel
             control={
               <Checkbox
@@ -65,7 +89,7 @@ const Category = () => {
             }
             label='Mix'
           />
-          <Button variant='contained'>Learn</Button>
+          <LearnModal cards={cards} />
         </Box>
       </Stack>
       <Cards cards={cards} updateCards={updateCards} />
