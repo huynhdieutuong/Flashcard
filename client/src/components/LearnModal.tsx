@@ -43,12 +43,17 @@ const LearnModal = ({
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [current, setCurrent] = useState(0)
-  const handleOpen = () => setOpen(true)
+  const handleOpen = () => {
+    if (!cards.length) return
+    setOpen(true)
+  }
   const handleClose = () => {
     setOpen(false)
     setCurrent(0)
+    setShowWord(false)
   }
   const [cards, setNewCards] = useState<Card[]>([])
+  const [showWord, setShowWord] = useState(false)
 
   const shuffleCards = (cards: Card[]) => {
     let currentIndex = cards.length,
@@ -86,6 +91,7 @@ const LearnModal = ({
     if (position === 'right' && current < cards.length - 1) {
       setCurrent(current + 1)
     }
+    setShowWord(false)
   }
 
   const changeCategory = async (categoryId: number) => {
@@ -97,8 +103,10 @@ const LearnModal = ({
         vietnamese: cards[current].vietnamese,
         categoryId,
       })
+      if (cards.length === 1) handleClose()
       setCards(cards.filter((card) => card.id !== cards[current].id))
       if (current === countCards) setCurrent(current - 1)
+      setShowWord(false)
       setLoading(false)
     } catch (error) {
       setLoading(false)
@@ -144,7 +152,12 @@ const LearnModal = ({
               <Close fontSize='large' />
             </IconButton>
           </Box>
-          <FlashCard card={cards[current]} englishFirst={englishFirst} />
+          <FlashCard
+            card={cards[current]}
+            englishFirst={englishFirst}
+            showWord={showWord}
+            setShowWord={setShowWord}
+          />
           <Box
             sx={{
               display: 'flex',
